@@ -83,22 +83,21 @@ class User extends Model{
     {
 
         $sql = new Sql();
+       
+        $desperson = $this->getdesperson();
+        $desemail = $this->getdesemail();
+        $nrphone = $this->getnrphone();
+        $deslogin = $this->getdeslogin();
+        $despassword = md5($this->getdespassword());
+        $inadmin = $this->getinadmin();
 
-        $results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
-            ":desperson"=>$this->getdesperson(),
-            ":deslogin"=>$this->getdeslogin(),
-            ":despassword"=>$this->getdespassword(),
-            ":desemail"=>$this->getdesemail(),
-            ":nrphone"=>$this->getnrphone(),
-            ":inadmin"=>$this->getinadmin()
-        ));
-
-        var_dump($results);
-
-        $this->setData($results[0]);
+        $results = $sql->select("INSERT INTO tb_persons (desperson, desemail, nrphone) VALUES ('$desperson', '$desemail', '$nrphone');
+        SET @last_insert_id = LAST_INSERT_ID(); 
+        SELECT @last_insert_id; 
+        INSERT INTO tb_users (idperson, deslogin, despassword, inadmin) VALUES (@last_insert_id, '$deslogin', '$despassword', '$inadmin');");
 
     }
-    
+
 }
 
 

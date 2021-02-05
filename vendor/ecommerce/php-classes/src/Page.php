@@ -16,7 +16,7 @@ class Page {
 
 
     // Método para receber os dados
-    private function setData($data = array())
+ /*   private function setData($data = array())
     {
 
         foreach ($this->options["data"] as $key => $value)
@@ -24,6 +24,19 @@ class Page {
 
             $this->tpl->assign($key, $value);
 
+        }
+
+    }
+*/
+
+    private function setData($data = array())
+    {
+        
+        foreach ($data as $key => $value)
+        {
+
+            $this->tpl->assign($key, $value);
+            
         }
 
     }
@@ -54,7 +67,8 @@ class Page {
     public function setTpl($name, $data = array(), $returnHTML = false)
     {
 
-        $this->setData();
+        
+        $this->setData($data);
 
         return $this->tpl->draw($name, $returnHTML);
 
