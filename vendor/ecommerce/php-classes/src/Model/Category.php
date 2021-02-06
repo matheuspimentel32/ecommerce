@@ -29,6 +29,8 @@ class Category extends Model{
         $descategory = $this->getdescategory();
 
         $results = $sql->select("INSERT INTO tb_categories (descategory) VALUES ('$descategory')");
+
+        Category::updateFile();
     
     }
 
@@ -53,7 +55,7 @@ class Category extends Model{
 
         $results = $sql->select("UPDATE tb_categories SET descategory = '$descategory' WHERE idcategory = '$idcategory'");
         
-        echo $idcategory;
+        Category::updateFile();
 
     }
 
@@ -66,7 +68,31 @@ class Category extends Model{
 
         $sql->query("DELETE FROM tb_categories WHERE idcategory = $idcategory");
 
+        Category::updateFile();
+
+    }
+
+
+    public static function updateFile()
+    {
+
+        $categories = Category::listAll();
+
+        $html = [];
+
+        foreach ($categories as $row)
+        {
+
+            array_push($html, '<li><a href="/categories/' . $row['idcategory'] . '">' . $row['descategory'] . '</a></li>');
+
+        }
+
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));
+
+
     }
 
 
 }
+
+?>
