@@ -7,19 +7,13 @@ use \Hcode\Page;
 use \Hcode\PageAdmin;
 use \Hcode\Model\User;
 use \Hcode\Model\Category;
+use \Hcode\Model\Products;
 
 $app = new \Slim\Slim();
 
 $app->config('debug', true);
 
-//Para carregar o site
-$app->get('/', function() {
-    
-	$page = new Page();
-
-	$page->setTpl("index");
-
-});
+require_once("site.php");
 
 //Para carregar o admin
 $app->get('/admin', function() {
@@ -304,6 +298,7 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 });
 
+//Para carregar as categorias
 $app->get("/categories/:idcategory", function($idcategory){
 
 	$category = new Category();
@@ -318,6 +313,36 @@ $app->get("/categories/:idcategory", function($idcategory){
 	]);
 
 });
+
+
+//Acessar produtos
+$app->get("/admin/products", function(){
+
+	User::verifyLogin();
+
+	$products = Products::listAll();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("products", [
+		"products"=>$products
+	]);
+
+});
+
+
+//Criar produtos
+$app->get("/admin/products/create", function(){
+
+	User::verifyLogin();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("products-create");
+
+});
+
+
 
 $app->run();
 
