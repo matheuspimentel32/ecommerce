@@ -13,7 +13,14 @@ $app = new \Slim\Slim();
 
 $app->config('debug', true);
 
-require_once("site.php");
+//Para carregar o site
+$app->get('/', function() {
+    
+	$page = new Page();
+
+	$page->setTpl("index");
+
+});
 
 //Para carregar o admin
 $app->get('/admin', function() {
@@ -342,6 +349,59 @@ $app->get("/admin/products/create", function(){
 
 });
 
+//Post do criar produtos
+$app->post("/admin/products/create", function(){
+
+	User::verifyLogin();
+
+	$product = new Products();
+
+	$product->setData($_POST);
+
+	$product->save();
+
+	header("Location: /admin/products");
+	
+	exit;
+
+});
+
+//Editar produtos
+$app->get("/admin/products/:idproduct", function($idproduct){
+
+	User::verifyLogin();
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("products-update", [
+		"product"=>$product->getValues()
+	]);
+});
+
+//Post do editar produtos
+$app->post("/admin/products/:idproduct", function($idproduct){
+
+	User::verifyLogin();
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$product->setData($_POST);
+
+	$product->update($idproduct);
+
+	$product->setPhoto($_FILES["file"]);
+
+	header("Location: /admin/products");
+	
+	exit;
+
+});
 
 
 $app->run();

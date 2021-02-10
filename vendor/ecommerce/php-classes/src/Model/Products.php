@@ -16,7 +16,7 @@ class Products extends Model{
 
         $sql = new Sql();
 
-        return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
+        return $sql->select("SELECT * FROM tb_products ORDER BY idproduct");
 
     }
 
@@ -29,15 +29,15 @@ class Products extends Model{
         $desproduct = $this->getdesproduct();
         $vlprice = $this->getvlprice();
         $vlwidth = $this->getvlwidth();
-        $vllenght = $this->getvllenght();
+        $vllength = $this->getvllength();
+        $vlheight = $this->getvlheight();
         $vlweight = $this->getvlweight();
         $desurl = $this->getdesurl();
 
         $results = $sql->select("INSERT INTO tb_products (desproduct, vlprice, vlwidth, vlheight, vllength, vlweight, desurl) 
-                            VALUES('$desproduct', '$vlprice', '$vlwidth', '$vlheight', '$vllength', '$vlweight', '$desurl')");
-
-       $this->setData($results[0]);
-    
+                            VALUES('$desproduct', $vlprice, $vlwidth, $vlheight, $vllength, $vlweight, '$desurl')");
+        
+        $this->setData($results);
     }
 
     
@@ -53,18 +53,29 @@ class Products extends Model{
     }
 
 
-   /* public function update($desproduct)
+    public function update($idproduct)
     {
 
         $sql = new Sql();
 
         $idproduct = $this->getidproduct();
+        $desproduct = $this->getdesproduct();
+        $vlprice = $this->getvlprice();
+        $vlwidth = $this->getvlwidth();
+        $vllength = $this->getvllength();
+        $vlheight = $this->getvlheight();
+        $vlweight = $this->getvlweight();
+        $desurl = $this->getdesurl();
 
-        $results = $sql->select("UPDATE tb_products SET desproduct = '$desproduct' WHERE idproduct = '$idproduct'");
-        
-        
-
-    }*/
+        $results = $sql->select("UPDATE tb_products SET desproduct = '$desproduct', 
+                                                        vlprice = $vlprice,
+                                                        vlwidth = $vlwidth,
+                                                        vllength = $vllength,
+                                                        vlheight = $vlheight,
+                                                        vlweight = $vlweight,
+                                                        desurl = $desurl
+                                WHERE idproduct = '$idproduct'");
+    }
 
     public function delete()
     {
@@ -74,6 +85,89 @@ class Products extends Model{
         $idproduct = $this->getidproduct();
 
         $sql->query("DELETE FROM tb_products WHERE idproduct = $idproduct");
+
+    }
+
+    public function checkPhoto()
+    {
+        
+        $idproduct = $this->getidproduct();
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
+            "res" . DIRECTORY_SEPARATOR . 
+            "site" . DIRECTORY_SEPARATOR . 
+            "img" . DIRECTORY_SEPARATOR . 
+            "products" . DIRECTORY_SEPARATOR .
+            $idproduct . ".jpg"
+        )){
+
+            $url = "/res/site/img/products/" . $idproduct . ".jpg";
+
+        } else {
+
+            $url = "/res/site/img/products/product.jpg";
+
+        }
+
+        return $this->setdesphoto($url);
+
+    }
+
+    public function getValues()
+    {
+
+        $this->checkPhoto();
+
+        $values = parent::getValues();
+
+        return $values;
+
+    }
+
+    public function setPhoto($files)
+    {
+
+        if($files["tmp_name"] !== ""){
+        
+            // Para pegar a extensão do arquivo
+            $extension = explode('.', $files['name']);
+            $extension = end($extension);
+
+            switch ($extension) {
+
+                case "jpg":
+                    $image = imagecreatefromjpeg($files["tmp_name"]);
+                break;
+
+                case "jpeg":
+                    $image = imagecreatefromjpeg($files["tmp_name"]);
+                break;
+
+                case "gif":
+                    $image = imagecreatefromgif($files["tmp_name"]);
+                break;
+
+                case "png":
+                    $image = imagecreatefrompng($files["tmp_name"]);
+                break;
+
+            }
+
+            $dir = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 
+            "res" . DIRECTORY_SEPARATOR . 
+            "site" . DIRECTORY_SEPARATOR . 
+            "img" . DIRECTORY_SEPARATOR . 
+            "products" . DIRECTORY_SEPARATOR .
+            $this->getidproduct() . ".jpg";
+
+            imagejpeg($image, $dir);
+
+            imagedestroy($image);
+
+            $this->checkPhoto();
+
+        }
+
+        
 
     }
 
