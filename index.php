@@ -314,15 +314,33 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 //Para carregar as categorias
 $app->get("/categories/:idcategory", function($idcategory){
 
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
+
 	$category = new Category();
 
 	$category->get((int)$idcategory);
 
+	$pagination = $category->getProductsPage($page);
+
+	$pages = [];
+
+	for ($i=1; $i <= $pagination['pages']; $i++) {
+		
+		array_push($pages, [
+			'link'=>'/categories/' . $category->getidcategory() . '?page=' . $i,
+			'page'=>$i
+		]);
+
+	}
+
+	var_dump($pages);
+	echo "<br>";
+	var_dump($pagination);
 	$page = new Page();
 
 	$page->setTpl("category", [
 		"category"=>$category->getValues(),
-		"products"=>Products::checkList($category->getProducts($idcategory, true))
+		"products"=>$pagination["data"]
 	]);
 
 });
