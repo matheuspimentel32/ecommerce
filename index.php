@@ -13,12 +13,18 @@ $app = new \Slim\Slim();
 
 $app->config('debug', true);
 
+require_once("functions.php");
+
 //Para carregar o site
 $app->get('/', function() {
-    
+	
+	$products = Products::listAll();
+	
 	$page = new Page();
 
-	$page->setTpl("index");
+	$page->setTpl("index", [
+		'products'=>Products::checkList($products)
+	]);
 
 });
 
