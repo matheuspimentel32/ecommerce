@@ -20,7 +20,7 @@ class Category extends Model{
 
     }
 
-
+    //Para salvar
     public function save()
     {
 
@@ -34,6 +34,7 @@ class Category extends Model{
     
     }
 
+    //Para pegar os dados pelo id passado
     public function get($idcategory)
     {
 
@@ -45,7 +46,7 @@ class Category extends Model{
 
     }
 
-
+    //Para fazer update da categoria
     public function update($descategory)
     {
 
@@ -59,6 +60,7 @@ class Category extends Model{
 
     }
 
+    //Para deletar
     public function delete()
     {
 
@@ -72,7 +74,7 @@ class Category extends Model{
 
     }
 
-
+    //Para enviar foto
     public static function updateFile()
     {
 
@@ -91,6 +93,63 @@ class Category extends Model{
 
 
     }
+
+    // Para listar os produtos daquela categoria
+    public function getProducts($idcategory, $related = true)
+    {
+
+        $sql = new Sql();
+
+        if ($related === true) {
+
+            return $sql->select("SELECT * FROM tb_products WHERE idproduct IN (
+                            SELECT a.idproduct 
+                            FROM tb_products a 
+                            INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct 
+                            WHERE b.idcategory = 15
+                            );
+                        ");
+
+        } else {
+
+            return $sql->select("SELECT * FROM tb_products WHERE idproduct NOT IN (
+                            SELECT a.idproduct 
+                            FROM tb_products a 
+                            INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct 
+                            WHERE b.idcategory = 15
+                            )
+                        ");
+        }
+
+        
+
+    }
+
+    //Para adicionar produto naquela categoria
+    public function addProduct(Products $product)
+    {
+
+        $sql = new Sql();
+
+        $sql->query("INSERT INTO tb_productscategories (idcategory, idproduct) VALUES (:idcategory, :idproduct)", [
+            ':idcategory'=>$this->getidcategory(),
+            ':idproduct'=>$product->getidproduct()
+        ]);
+
+    }
+
+     //Para retirar produto naquela categoria
+     public function removeProduct(Products $product)
+     {
+ 
+         $sql = new Sql();
+ 
+         $sql->query("DELETE FROM tb_productscategories WHERE idcategory = :idcategory and idproduct = :idproduct", [
+             ':idcategory'=>$this->getidcategory(),
+             ':idproduct'=>$product->getidproduct()
+         ]);
+ 
+     }
 
 
 }

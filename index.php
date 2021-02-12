@@ -322,11 +322,69 @@ $app->get("/categories/:idcategory", function($idcategory){
 
 	$page->setTpl("category", [
 		"category"=>$category->getValues(),
-		"products"=>[]
+		"products"=>Products::checkList($category->getProducts($idcategory, true))
 	]);
 
 });
 
+//Para listar produtos por categorias
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$page =  new PageAdmin();
+
+	$page->setTpl("categories-products", [
+		"category"=>$category->getValues(),
+		"productsRelated"=>$category->getProducts($idcategory, true),
+		"productsNotRelated"=>$category->getProducts($idcategory, false)
+	]);
+
+});
+
+$app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$category->addProduct($product);
+
+	header("Location: /admin/categories/" . $idcategory . "/products");
+
+	exit;
+
+});
+
+$app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$category->removeProduct($product);
+
+	header("Location: /admin/categories/" . $idcategory . "/products");
+
+	exit;
+
+});
 
 //Acessar produtos
 $app->get("/admin/products", function(){
