@@ -128,6 +128,8 @@ class Products extends Model{
 
     }
 
+
+    //Para pegar os valores
     public function getValues()
     {
 
@@ -139,6 +141,7 @@ class Products extends Model{
 
     }
 
+    //Para inserir foto
     public function setPhoto($files)
     {
 
@@ -183,10 +186,36 @@ class Products extends Model{
 
         }
 
-        
+    }
+
+
+    public function getFromURL($desurl)
+    {
+
+        $sql = new Sql();
+
+        $rows = $sql->select("SELECT * FROM tb_products WHERE desurl = :desurl LIMIT 1", [
+            ':desurl'=>$desurl
+        ]);
+
+        $this->setData($rows[0]);
 
     }
 
+    //Para buscar as categorias quando estiver vendo a descrição do produto
+    public function getCategories()
+    {
+
+        $sql = new Sql();
+
+        return $sql->select("SELECT *
+                    FROM tb_categories a 
+                    INNER JOIN tb_productscategories b ON a.idcategory = b.idcategory 
+                    WHERE b.idproduct = :idproduct",[
+                        ':idproduct'=>$this->getidproduct()
+                    ]);                    
+
+    }
 
 }
 

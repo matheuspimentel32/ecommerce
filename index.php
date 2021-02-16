@@ -311,7 +311,27 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 });
 
-//Para carregar as categorias
+//Para listar produtos por categorias
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$page =  new PageAdmin();
+
+	$page->setTpl("categories-products", [
+		"category"=>$category->getValues(),
+		"productsRelated"=>$category->getProducts($idcategory, true),
+		"productsNotRelated"=>$category->getProducts($idcategory, false)
+	]);
+
+});
+
+
+//Para carregar os produtos das categorias
 $app->get("/categories/:idcategory", function($idcategory){
 
 	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
@@ -333,36 +353,16 @@ $app->get("/categories/:idcategory", function($idcategory){
 
 	}
 
-	var_dump($pages);
-	echo "<br>";
-	var_dump($pagination);
 	$page = new Page();
 
 	$page->setTpl("category", [
 		"category"=>$category->getValues(),
-		"products"=>$pagination["data"]
+		"products"=>$pagination["data"],
+		"pages"=>$pages
 	]);
 
 });
 
-//Para listar produtos por categorias
-$app->get("/admin/categories/:idcategory/products", function($idcategory){
-
-	User::verifyLogin();
-
-	$category = new Category();
-
-	$category->get((int)$idcategory);
-
-	$page =  new PageAdmin();
-
-	$page->setTpl("categories-products", [
-		"category"=>$category->getValues(),
-		"productsRelated"=>$category->getProducts($idcategory, true),
-		"productsNotRelated"=>$category->getProducts($idcategory, false)
-	]);
-
-});
 
 $app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
 
@@ -485,6 +485,23 @@ $app->post("/admin/products/:idproduct", function($idproduct){
 
 });
 
+
+//Para descrição dos produtos
+$app->get("/products/:desurl", function($desurl){
+
+	$product = new Products();
+
+	$product->getFromURL($desurl);
+
+	$page = new Page();
+
+	$page->setTpl("product-detail", [
+		"product"=>$product->getValues(),
+		"categories"=>$product->getCategories()
+	]);
+
+});
+ 
 
 $app->run();
 

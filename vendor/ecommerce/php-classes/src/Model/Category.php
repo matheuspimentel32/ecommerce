@@ -106,7 +106,7 @@ class Category extends Model{
                             SELECT a.idproduct 
                             FROM tb_products a 
                             INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct 
-                            WHERE b.idcategory = 15
+                            WHERE b.idcategory = $idcategory
                             );
                         ");
 
@@ -116,7 +116,7 @@ class Category extends Model{
                             SELECT a.idproduct 
                             FROM tb_products a 
                             INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct 
-                            WHERE b.idcategory = 15
+                            WHERE b.idcategory = $idcategory
                             )
                         ");
         }
@@ -124,13 +124,13 @@ class Category extends Model{
     }
 
 
-    //Para trazer 3 items por pagin
+    //Para trazer 3 items por pagina
     public function getProductsPage($page = 1, $itemsPerPage = 3)
     {
 
         $start = ($page - 1) * $itemsPerPage;
 
-		$sql = new Sql();
+        $sql = new Sql();
 
 		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS *
 			FROM tb_products a
@@ -147,7 +147,7 @@ class Category extends Model{
 		return [
 			'data'=>Products::checkList($results),
 			'total'=>(int)$resultTotal[0]["nrtotal"],
-			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
+			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage) //Ceil arredonda para o próximo número inteiro
 		];
 
     }
