@@ -511,8 +511,69 @@ $app->get("/cart", function(){
 
 	$page = new Page();
 	
-	$page->setTpl("cart");
+	$page->setTpl("cart",[
+		'cart'=>$cart->getValues(),
+		'products'=>$cart->getProducts()
+	]);
 
+});
+
+//Para adicionar produtos no carrinho de compras
+$app->get("/cart/:idproduct/add", function($idproduct){
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$qtd = (isset($_GET['qtd'])) ? (int)$_GET['qtd'] : 1;
+
+	for ($i = 0; $i < $qtd; $i++){
+
+		$cart->addProduct($product);
+
+	}
+
+	header("Location: /cart#woocommerce");
+
+	exit;
+
+});
+
+//Para remover 1 unidade do produto no carrinho de compras
+$app->get("/cart/:idproduct/minus", function($idproduct){
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->removeProduct($product);
+
+	header("Location: /cart#woocommerce");
+
+	exit;
+	
+});
+
+
+//Para remover todo o produto do produto no carrinho de compras
+$app->get("/cart/:idproduct/remove", function($idproduct){
+
+	$product = new Products();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->removeProduct($product, true);
+
+	header("Location: /cart#woocommerce");
+
+	exit;
+	
 });
 
 $app->run();
