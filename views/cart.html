@@ -21,9 +21,9 @@
 
                         <form action="/checkout">
                             
-                            <div class="alert alert-danger" role="alert">
+                            <!-- <div class="alert alert-danger" role="alert">
                             Error!
-                            </div>
+                            </div> -->
 
                             <table cellspacing="0" class="shop_table cart">
                                 <thead>
@@ -75,13 +75,13 @@
 
                                 <div class="cross-sells">
 
-                                    <h2>Cálculo de Frete</h2>
+                                    <!-- <h2 id="calcFreight">Calcular Frete</h2> -->
                                     
-                                    <div class="coupon">
+                                    <!-- <div class="coupon">
                                         <label for="cep">CEP:</label>
                                         <input type="text" placeholder="00000-000" value="" id="cep" class="input-text" name="zipcode">
                                         <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
-                                    </div>
+                                    </div> -->
 
                                 </div>
 
@@ -91,19 +91,19 @@
 
                                     <table cellspacing="0">
                                         <tbody>
-                                            <tr class="cart-subtotal">
+                                            <!-- <tr class="cart-subtotal">
                                                 <th>Subtotal</th>
-                                                <td><span class="amount">$700.00</span></td>
-                                            </tr>
+                                                <td><span class="amount">R${function="formatPrice($cart.vlsubtotal)"}</span></td>
+                                            </tr> -->
 
-                                            <tr class="shipping">
+                                            <!-- <tr class="shipping">
                                                 <th>Frete</th>
                                                 <td>$5.00 <small>prazo de 0 dia(s)</small></td>
-                                            </tr>
+                                            </tr> -->
 
                                             <tr class="order-total">
                                                 <th>Total</th>
-                                                <td><strong><span class="amount">$705.00</span></strong> </td>
+                                                <td><strong><span class="amount">R${function="formatPrice($cart.vlsubtotal)"}</span></strong> </td>
                                             </tr>
                                         </tbody>
                                     </table>
