@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 17/02/2021 às 01:02
+-- Tempo de geração: 19/02/2021 às 22:46
 -- Versão do servidor: 10.4.13-MariaDB
 -- Versão do PHP: 7.4.8
 
@@ -51,8 +51,18 @@ CREATE TABLE `tb_carts` (
   `iduser` int(11) DEFAULT NULL,
   `idaddress` int(11) DEFAULT NULL,
   `vlfreight` decimal(10,2) DEFAULT NULL,
-  `dtregister` timestamp NOT NULL DEFAULT current_timestamp()
+  `dtregister` timestamp NOT NULL DEFAULT current_timestamp(),
+  `deszipcode` char(8) DEFAULT NULL,
+  `nrdays` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Despejando dados para a tabela `tb_carts`
+--
+
+INSERT INTO `tb_carts` (`idcart`, `dessessionid`, `iduser`, `idaddress`, `vlfreight`, `dtregister`, `deszipcode`, `nrdays`) VALUES
+(4, 'ce6e490fe1c823294b9b293f192caf16', NULL, NULL, NULL, '2021-02-17 23:59:18', NULL, NULL),
+(5, 'a1a5353fdfd3d043adfc74f2cd777bc8', NULL, NULL, NULL, '2021-02-19 18:17:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -64,9 +74,39 @@ CREATE TABLE `tb_cartsproducts` (
   `idcartproduct` int(11) NOT NULL,
   `idcart` int(11) NOT NULL,
   `idproduct` int(11) NOT NULL,
-  `dtremoved` datetime NOT NULL,
-  `dtregister` timestamp NOT NULL DEFAULT current_timestamp()
+  `dtremoved` datetime DEFAULT NULL,
+  `dtregister` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Despejando dados para a tabela `tb_cartsproducts`
+--
+
+INSERT INTO `tb_cartsproducts` (`idcartproduct`, `idcart`, `idproduct`, `dtremoved`, `dtregister`) VALUES
+(2, 5, 1, '2021-02-19 15:53:14', '2021-02-19 18:46:39'),
+(3, 5, 1, '2021-02-19 15:53:26', '2021-02-19 18:52:10'),
+(4, 5, 1, '2021-02-19 15:53:29', '2021-02-19 18:52:22'),
+(5, 5, 1, '2021-02-19 15:56:20', '2021-02-19 18:53:15'),
+(6, 5, 1, '2021-02-19 15:56:20', '2021-02-19 18:53:17'),
+(7, 5, 1, '2021-02-19 15:56:20', '2021-02-19 18:53:25'),
+(8, 5, 1, '2021-02-19 15:56:20', '2021-02-19 18:53:27'),
+(9, 5, 1, '2021-02-19 15:56:20', '2021-02-19 18:53:28'),
+(10, 5, 1, '2021-02-19 15:56:44', '2021-02-19 18:56:27'),
+(11, 5, 1, '2021-02-19 15:56:44', '2021-02-19 18:56:27'),
+(12, 5, 1, '2021-02-19 15:56:44', '2021-02-19 18:56:27'),
+(13, 5, 1, '2021-02-19 15:56:44', '2021-02-19 18:56:27'),
+(14, 5, 1, '2021-02-19 15:57:14', '2021-02-19 18:57:01'),
+(15, 5, 1, '2021-02-19 15:57:14', '2021-02-19 18:57:02'),
+(16, 5, 1, '2021-02-19 15:57:14', '2021-02-19 18:57:02'),
+(17, 5, 1, '2021-02-19 18:45:32', '2021-02-19 18:57:23'),
+(18, 5, 1, '2021-02-19 18:45:40', '2021-02-19 18:57:23'),
+(19, 5, 1, '2021-02-19 18:45:41', '2021-02-19 18:57:23'),
+(20, 5, 2, '2021-02-19 15:58:00', '2021-02-19 18:57:56'),
+(21, 5, 1, '2021-02-19 18:45:42', '2021-02-19 19:13:09'),
+(22, 5, 1, NULL, '2021-02-19 21:45:30'),
+(23, 5, 3, NULL, '2021-02-19 21:45:36'),
+(24, 5, 1, NULL, '2021-02-19 21:45:43'),
+(25, 5, 3, NULL, '2021-02-19 21:45:45');
 
 -- --------------------------------------------------------
 
@@ -374,10 +414,16 @@ ALTER TABLE `tb_addresses`
   MODIFY `idaddress` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `tb_carts`
+--
+ALTER TABLE `tb_carts`
+  MODIFY `idcart` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de tabela `tb_cartsproducts`
 --
 ALTER TABLE `tb_cartsproducts`
-  MODIFY `idcartproduct` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idcartproduct` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de tabela `tb_categories`
