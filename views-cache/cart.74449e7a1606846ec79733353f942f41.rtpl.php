@@ -105,7 +105,7 @@
 
                                             <tr class="order-total">
                                                 <th>Total</th>
-                                                <td><strong><span class="amount">R$<?php echo formatPrice($cart["vlsubtotal"]); ?></span></strong> </td>
+                                                <td><span class="amount">R$<?php echo formatPrice($cart["vltotal"]); ?></span></td>
                                             </tr>
                                         </tbody>
                                     </table>
