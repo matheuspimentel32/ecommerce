@@ -12,6 +12,7 @@ class User extends Model{
     const SECRET_IV = "HcodePhp7_Secret_IV";
     const ERROR = "UserError";
     const ERROR_REGISTER = "UserErrorRegister";
+    const SUCCESS = "UserSucesss";
 
     //Para pegar o id de seção do usuário
     public static function getFromSession()
@@ -26,6 +27,23 @@ class User extends Model{
             return $user;
             
         }
+
+    }
+
+    public static function getDataUser()
+    {
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) WHERE a.iduser = :iduser", array(
+            ":iduser"=>$_SESSION[User::SESSION]['iduser']
+        ));
+
+        $user = new User();
+
+        $user->setData($results);
+
+        return $user;
 
     }
 
@@ -196,6 +214,27 @@ class User extends Model{
    
     }
 
+    public function updateUser($user = array())
+    {
+
+        $sql = new Sql();
+       
+        $iduser = $user[0]['iduser'];
+        $desperson = $user[0]['desperson'];
+        $desemail = $user[0]['desemail'];
+        $nrphone = $user[0]['nrphone'];
+        $idperson = $user[0]['idperson'];
+        $deslogin = $user[0]['deslogin'];
+        $inadmin = $user[0]['inadmin'];
+
+        $results = $sql->select("UPDATE tb_persons SET desperson = '$desperson', desemail = '$desemail', nrphone = '$nrphone' 
+                                    WHERE idperson = '$idperson';
+                                UPDATE tb_users SET deslogin = '$deslogin', inadmin = '$inadmin' 
+                                    WHERE iduser = '$iduser';
+                                ");
+   
+    }
+
     public function delete()
     {
 
@@ -211,7 +250,7 @@ class User extends Model{
     }
 
 
-    public static function getForgot($email)
+    public static function getForgot($email, $inadmin = true)
     {
 
         $sql = new Sql();
@@ -229,11 +268,10 @@ class User extends Model{
 
             $data = $results[0];
 
-            $iduser = $data['iduser'];
-            $desip = "10.12.88.140";
-            $inadmin = $data['inadmin'];
-
-            $results2 = $sql->select("INSERT INTO tb_userspasswordsrecoveries (iduser, desip) VALUES('$iduser', '$desip')");
+			$results2 = $sql->select("INSERT INTO tb_userspasswordsrecoveries (iduser, desip) VALUES(':iduser', ':desip')", array(
+				":iduser"=>$data['iduser'],
+				":desip"=>$_SERVER['REMOTE_ADDR']
+            ));
 
             if ($results2 === false)
             {
@@ -244,7 +282,7 @@ class User extends Model{
             else
             {
 
-                $dataRecovery = $iduser;
+                $dataRecovery = $data['iduser'];
 
                 $code = openssl_encrypt($dataRecovery, 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
 
@@ -299,6 +337,32 @@ class User extends Model{
         $_SESSION[User::ERROR] = NULL;
 
     }
+
+    //Mensagens de sucesso
+    public static function setSuccess($msg)
+	{
+
+		$_SESSION[User::SUCCESS] = $msg;
+
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+
+		return $msg;
+
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[User::SUCCESS] = NULL;
+
+	}
 
     //Erros do Registro
     public static function setErrorRegister($msg)

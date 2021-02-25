@@ -173,7 +173,7 @@ $app->post('/admin/users/:iduser', function($iduser) {
 
 });
 
-//Para Esqueci minha senha
+//Para Esqueci minha senha do admin
 $app->get('/admin/forgot', function() {
 
 	$page = new PageAdmin([
@@ -185,7 +185,7 @@ $app->get('/admin/forgot', function() {
 
 });
 
-//Post do Esqueci minha senha
+//Post do Esqueci minha senha do admin
 $app->post("/admin/forgot", function(){
 
 	$user = User::getForgot($_POST['email']);
@@ -651,7 +651,7 @@ $app->get("/logout", function(){
 
 });
 
-
+//Post do registrar
 $app->post("/register", function(){
 
 	$_SESSION['registerValues'] = $_POST;
@@ -706,6 +706,141 @@ $app->post("/register", function(){
 	exit;
 
 });
+
+
+$app->get("/forgot", function() {
+
+	$page = new Page();
+
+	$page->setTpl("forgot");	
+
+});
+
+$app->post("/forgot", function(){
+
+	$user = User::getForgot($_POST["email"], false);
+
+	header("Location: /forgot/sent");
+	exit;
+
+});
+
+$app->get("/forgot/sent", function(){
+
+	$page = new Page();
+
+	$page->setTpl("forgot-sent");	
+
+});
+
+
+$app->get("/forgot/reset", function(){
+
+	$user = User::validForgotDecrypt($_GET["code"]);
+
+	$page = new Page();
+
+	$page->setTpl("forgot-reset", array(
+		"name"=>$user["desperson"],
+		"code"=>$_GET["code"]
+	));
+
+});
+
+$app->post("/forgot/reset", function(){
+
+	$forgot = User::validForgotDecrypt($_POST["code"]);	
+
+	User::setFogotUsed($forgot["idrecovery"]);
+
+	$user = new User();
+
+	$user->get((int)$forgot["iduser"]);
+
+	$password = User::getPasswordHash($_POST["password"]);
+
+	$user->setPassword($password);
+
+	$page = new Page();
+
+	$page->setTpl("forgot-reset-success");
+
+});
+
+//Perfil
+$app->get("/profile", function(){
+
+	User::verifyLogin(false);
+
+	$user = User::getDataUser();
+
+	$page = new Page();
+
+	$page->setTpl("profile", [
+		'user'=>$user->getValues(),
+		'profileMsg'=>User::getSuccess(),
+		'profileError'=>User::getError()
+	]);
+
+});
+
+//Perfil
+$app->post("/profile", function(){
+
+	User::verifyLogin(false);
+
+	if (!isset($_POST['desperson']) || $_POST['desperson'] === '') {
+		User::setError("Preencha o seu nome.");
+		header('Location: /profile');
+		exit;
+	}
+
+	if (!isset($_POST['desemail']) || $_POST['desemail'] === '') {
+		User::setError("Preencha o seu e-mail.");
+		header('Location: /profile');
+		exit;
+	}
+
+	if (!isset($_POST['nrphone']) || $_POST['nrphone'] === '') {
+		User::setError("Preencha o seu telefone.");
+		header('Location: /profile');
+		exit;
+	}
+
+	$user = User::getDataUser();	
+
+	$dataUser = $user->getValues();
+
+	if ($_POST['desemail'] !== $dataUser[0]['desemail']) {
+
+		if (User::checkLoginExist($_POST['desemail']) === true) {
+
+			User::setError("Este endereço de e-mail já está cadastrado.");
+			header('Location: /profile');
+			exit;
+
+		}
+
+	}
+
+	$_POST['inadmin'] = $dataUser[0]['inadmin'];
+	$_POST['despassword'] = $dataUser[0]['despassword'];
+	$dataUser[0]['desperson'] = $_POST['desperson'];
+	$dataUser[0]['desemail'] = $_POST['desemail'];
+	$dataUser[0]['deslogin'] = $_POST['desemail'];
+	$dataUser[0]['nrphone'] = $_POST['nrphone'];
+
+	$user->updateUser($dataUser);
+
+	User::setSuccess("Dados alterados com sucesso!");
+
+	header('Location: /profile');
+	exit;
+
+});
+
+
+
 
 $app->run();
 
