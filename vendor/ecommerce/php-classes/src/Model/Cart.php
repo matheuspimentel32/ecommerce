@@ -216,24 +216,24 @@ class Cart extends Model{
         if ($totals['nrqtd'] > 0) {
 
             if ($totals['vlheight'] < 2) $totals['vlheight'] = 2;
-            if ($totals['vllength'] < 16) $totals['vllength'] = 16;
+			if ($totals['vllength'] < 16) $totals['vllength'] = 16;
 
-            $qs = http_build_query([
-                'nCdEmpresa'=>'',
-                'sDsSenha'=>'',
-                'nCdServico'=>'40010',
-                'sCepOrigem'=>'09853120',
-                'sCepDestino'=>$nrzipcode,
-                'nVlPeso'=>$totals['vlweight'],
-                'nCdFormato'=>'1',
-                'nVlComprimento'=>$totals['vllength'],
-                'nVlAltura'=>$totals['vlheight'],
-                'nVlLargura'=>$totals['vlwidth'],
-                'nVlDiametro'=>'0',
-                'sCdMaoPropria'=>'S',
-                'nVlValorDeclarado'=>$totals['vlprice'],
-                'sCdAvisoRecebimento'=>'S'
-            ]);
+			$qs = http_build_query([
+				'nCdEmpresa'=>'',
+				'sDsSenha'=>'',
+				'nCdServico'=>'40010',
+				'sCepOrigem'=>'09853120',
+				'sCepDestino'=>$nrzipcode,
+				'nVlPeso'=>$totals['vlweight'],
+				'nCdFormato'=>'1',
+				'nVlComprimento'=>$totals['vllength'],
+				'nVlAltura'=>$totals['vlheight'],
+				'nVlLargura'=>$totals['vlwidth'],
+				'nVlDiametro'=>'0',
+				'sCdMaoPropria'=>'S',
+				'nVlValorDeclarado'=>$totals['vlprice'],
+				'sCdAvisoRecebimento'=>'S'
+			]);
 
             $xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
 
