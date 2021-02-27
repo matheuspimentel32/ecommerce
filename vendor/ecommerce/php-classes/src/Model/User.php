@@ -104,7 +104,7 @@ class User extends Model{
 
         $data = $results[0];
 
-        if (md5($password) === $data["despassword"])
+        if (password_verify($password, $data["despassword"]) === true)
         {
 
             $user = new User();
@@ -120,6 +120,7 @@ class User extends Model{
             throw new \Exception("Usuário inexistente ou senha inválida.");
 
         }
+
 
     }
 
@@ -170,7 +171,7 @@ class User extends Model{
         $desemail = $this->getdesemail();
         $nrphone = $this->getnrphone();
         $deslogin = $this->getdeslogin();
-        $despassword = md5($this->getdespassword());
+        $despassword = User::getPasswordHash($this->getdespassword());
         $inadmin = $this->getinadmin();
 
         $results = $sql->select("INSERT INTO tb_persons (desperson, desemail, nrphone) VALUES ('$desperson', '$desemail', '$nrphone');
@@ -212,6 +213,20 @@ class User extends Model{
                                 UPDATE tb_users SET deslogin = '$deslogin', inadmin = '$inadmin' WHERE iduser = '$iduser';
                                 ");
    
+    }
+    
+    
+    public function updatePass($password)
+    {
+
+        $sql = new Sql();
+
+        $despassword = User::getPasswordHash($password);
+        $user = User::getFromSession();
+        $iduser = $user->getiduser();
+
+        $results = $sql->select("UPDATE tb_users SET despassword = '$despassword' WHERE iduser = $iduser");
+
     }
 
     public function updateUser($user = array())
@@ -408,9 +423,28 @@ class User extends Model{
 
 		return password_hash($password, PASSWORD_DEFAULT, [
 			'cost'=>12
-		]);
+        ]);
 
 	}
     
+    public function getOrders()
+    {
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT * FROM tb_orders a 
+                            INNER JOIN tb_ordersstatus b USING(idstatus) 
+                            INNER JOIN tb_carts c USING(idcart)
+                            INNER JOIN tb_users d ON d.iduser = a.iduser
+                            INNER JOIN tb_addresses e USING(idaddress)
+                            INNER JOIN tb_persons f ON f.idperson = d.idperson
+                            WHERE a.iduser = :iduser
+                            ", [
+                                ':iduser'=>$this->getiduser()
+                            ]);
+
+       return $results;
+
+    }
 
 }
