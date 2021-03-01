@@ -105,11 +105,11 @@ class Cart extends Model{
 
         $sql = new Sql();
 
-        $dessessionid = $this->getdessessionid();
-        $iduser = $this->getiduser();
-        $deszipcode = $this->deszipcode();
-        $vlfreight = $this->getvlfreight();
-        $nrdays = $this->getnrdays();
+        // $dessessionid = $this->getdessessionid();
+        // $iduser = $this->getiduser();
+        // $deszipcode = $this->deszipcode();
+        // $vlfreight = $this->getvlfreight();
+        // $nrdays = $this->getnrdays();
 
         $results = $sql->select("INSERT INTO tb_carts (dessessionid, iduser, deszipcode, vlfreight, nrdays)
                     VALUES(:dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
@@ -177,6 +177,8 @@ class Cart extends Model{
                         ]);
         
         return Products::checkList($rows);
+
+
 
     }
 

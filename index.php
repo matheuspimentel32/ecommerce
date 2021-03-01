@@ -2,6 +2,13 @@
 session_start();
 require_once("vendor/autoload.php");
 
+//Precauções
+//Rotas maiores devem ficar antes
+	// /admin/admin
+	// /admin
+
+
+
 use \Slim\Slim;
 use \Hcode\Page;
 use \Hcode\PageAdmin;
@@ -10,6 +17,8 @@ use \Hcode\Model\Category;
 use \Hcode\Model\Products;
 use \Hcode\Model\Cart;
 use \Hcode\Model\Address;
+use \Hcode\Model\Order;
+use \Hcode\Model\OrderStatus;
 
 $app = new \Slim\Slim();
 
@@ -1066,6 +1075,7 @@ $app->get("/profile/change-password", function(){
 
 });
 
+//Post para validar a nova senha
 $app->post("/profile/change-password", function(){
 
 	User::verifyLogin(false);
@@ -1110,7 +1120,6 @@ $app->post("/profile/change-password", function(){
 
 	}
 
-	//$user = User::getDataUser();
 	$user = User::getFromSession();
 
 	if (!password_verify($_POST['current_pass'], $user->getdespassword())) {
@@ -1128,6 +1137,109 @@ $app->post("/profile/change-password", function(){
 	exit;
 
 });
+
+
+//Para editar order
+$app->get("/admin/orders/:idorder/status", function($idorder){
+
+	User::verifyLogin();
+
+	$order = new Order();
+
+	$order->get((int)$idorder);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("order-status", [
+		'order'=>$order->getValues(),
+		'status'=>OrderStatus::listAll(),
+		'msgSuccess'=>Order::getSuccess(),
+		'msgError'=>Order::getError()
+	]);
+
+});
+
+
+//Post para editar order
+$app->post("/admin/orders/:idorder/status", function($idorder){
+
+	User::verifyLogin();
+
+	if (!isset($_POST['idstatus']) || !(int)$_POST['idstatus'] > 0){
+		Order::setError("Informe o status atual");
+		header("Location: /admin/orders/".$idorder."/status");
+		exit;
+	}
+
+	$order = new Order();
+
+	$order->get((int)$idorder);
+
+	$order->setidstatus((int)$_POST['idstatus']);
+
+	$order->updateStatus();
+
+	Order::setSuccess("Status atualizado.");
+	
+	header("Location: /admin/orders/".$idorder."/status");
+	exit;
+
+});
+
+
+//Para deletar order
+$app->get("/admin/orders/:idorder/delete", function($idorder){
+
+	User::verifyLogin();
+
+	$order = new Order();
+
+	$order->get((int)$idorder);
+
+	$order->delete();
+
+	header("Location: /admin/orders");
+	exit;
+
+});
+
+
+//Para deletar order
+$app->get("/admin/orders/:idorder", function($idorder){
+
+	User::verifyLogin();
+
+	$order = new Order();
+
+	$order->get((int)$idorder);
+
+	$cart =  $order->getCart();
+	
+	$page = new PageAdmin();
+
+	$page->setTpl("order", [
+		'orders'=>$order->getValues(),
+		'cart'=>$cart->getValues(),
+		'products'=>$cart->getProducts()
+	]);
+
+});
+
+
+//Para ver o que ele já comprou
+$app->get("/admin/orders", function(){
+
+	User::verifyLogin();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("orders", [
+		'orders'=>Order::listAll()
+	]);
+
+});
+
+
 
 $app->run();
 
