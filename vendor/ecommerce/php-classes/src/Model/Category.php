@@ -123,24 +123,18 @@ class Category extends Model{
 
     }
 
-
-    //Para trazer 3 items por pagina
-    public function getProductsPage($page = 1, $itemsPerPage = 3)
-    {
+    public static function getPage($page = 1, $itemsPerPage = 3)
+	{
 
         $start = ($page - 1) * $itemsPerPage;
 
         $sql = new Sql();
 
 		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS *
-			FROM tb_products a
-			INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct
-			INNER JOIN tb_categories c ON c.idcategory = b.idcategory
-			WHERE c.idcategory = :idcategory
+			FROM tb_categories
+			ORDER BY descategory
 			LIMIT $start, $itemsPerPage;
-		", [
-			':idcategory'=>$this->getidcategory()
-		]);
+		");
 
 		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
 
@@ -151,6 +145,33 @@ class Category extends Model{
 		];
 
     }
+    
+
+    public static function getPageSearch($search, $page = 1, $itemsPerPage = 3)
+	{
+
+        $start = ($page - 1) * $itemsPerPage;
+
+        $sql = new Sql();
+
+		$results = $sql->select("SELECT SQL_CALC_FOUND_ROWS *
+			FROM tb_categories
+            WHERE descategory LIKE :search
+            ORDER BY descategory DESC
+			LIMIT $start, $itemsPerPage;
+		", [
+            ':search'=>'%' . $search . '%'
+        ]);
+
+		$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+
+		return [
+			'data'=>$results,
+			'total'=>(int)$resultTotal[0]["nrtotal"],
+			'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage) //Ceil arredonda para o próximo número inteiro
+        ];
+
+	}
 
 
     //Para adicionar produto naquela categoria
