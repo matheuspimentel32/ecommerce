@@ -123,7 +123,7 @@ class Category extends Model{
 
     }
 
-    public static function getPage($page = 1, $itemsPerPage = 3)
+    public static function getPage($page = 1, $itemsPerPage = 10)
 	{
 
         $start = ($page - 1) * $itemsPerPage;
@@ -147,7 +147,7 @@ class Category extends Model{
     }
     
 
-    public static function getPageSearch($search, $page = 1, $itemsPerPage = 3)
+    public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
 	{
 
         $start = ($page - 1) * $itemsPerPage;
