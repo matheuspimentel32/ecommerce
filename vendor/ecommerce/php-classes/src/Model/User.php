@@ -258,8 +258,16 @@ class User extends Model{
         $iduser = $this->getiduser();
         $idperson = $this->getidperson();
 
-        $results = $sql->select("DELETE FROM tb_users WHERE iduser = '$iduser';
-                                DELETE FROM tb_persons WHERE idperson = '$idperson';
+        $results = $sql->select("DELETE FROM tb_addresses WHERE idperson = $idperson;
+                                DELETE FROM tb_addresses WHERE idaddress IN(SELECT idaddress FROM tb_orders WHERE iduser = $iduser);
+                                
+                                DELETE FROM tb_userslogs WHERE iduser = $iduser;
+                                DELETE FROM tb_userspasswordsrecoveries WHERE iduser = $iduser;
+                                DELETE FROM tb_orders WHERE iduser = $iduser;
+                                DELETE FROM tb_cartsproducts WHERE idcart IN(SELECT idcart FROM tb_carts WHERE iduser = $iduser);
+                                DELETE FROM tb_carts WHERE iduser = $iduser;
+                                DELETE FROM tb_users WHERE iduser = $iduser;
+                                DELETE FROM tb_persons WHERE idperson = $idperson;
                                 ");
 
     }
@@ -379,8 +387,6 @@ class User extends Model{
         ];
 
 	}
-
-
 
 
     //Erros do cadastro
